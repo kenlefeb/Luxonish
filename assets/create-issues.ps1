@@ -1,0 +1,1 @@
+hub issue -l test | %{ $command = ($_ -replace '#(?<id>\d+)\s+Port /test/(?<class>\w+)/(?<fixture>\w+)\.test\.js.*', 'hub issue create -c -M "M2 - All existing tests pass" -l "enhancement,good first issue" -m "Implement method(s) to make ${class}/${fixture} tests pass" -m "Prerequisite is #${id}"') ; Invoke-Expression $command }
