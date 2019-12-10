@@ -11,22 +11,7 @@ namespace Luxonish
         /// <summary>
         ///     Get the day of the month (1-30ish).
         /// </summary>
-        public int Day { get; }
-
-        public static DateTime CreateLocal(int year = 1, int month = 1, int day = 1, int hour = 0, int minute = 0, int second = 0, int millisecond = 0, Settings? settings = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static DateTime CreateUtc(int year = 1, int month = 1, int day = 1, int hour = 0, int minute = 0, int second = 0, int millisecond = 0, Settings? settings = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public System.DateTime ToSystemDateTime()
-        {
-            throw new NotImplementedException();
-        }
+        public int Day { get; private set; }
 
 
         /// <summary>
@@ -44,7 +29,7 @@ namespace Luxonish
         /// <summary>
         ///     Get the hour of the day (0-23).
         /// </summary>
-        public int Hour { get; }
+        public int Hour { get; private set; }
 
 
         /// <summary>
@@ -92,19 +77,19 @@ namespace Luxonish
         /// <summary>
         ///     Get the millisecond of the second (0-999).
         /// </summary>
-        public int Millisecond { get; }
+        public int Millisecond { get; private set; }
 
 
         /// <summary>
         ///     Get the minute of the hour (0-59).
         /// </summary>
-        public int Minute { get; }
+        public int Minute { get; private set; }
 
 
         /// <summary>
         ///     Get the month (1-12).
         /// </summary>
-        public int Month { get; }
+        public int Month { get; private set; }
 
 
         /// <summary>
@@ -165,7 +150,7 @@ namespace Luxonish
         /// <summary>
         ///     Get the second of the minute (0-59).
         /// </summary>
-        public int Second { get; }
+        public int Second { get; private set; }
 
 
         /// <summary>
@@ -207,7 +192,7 @@ namespace Luxonish
         /// <summary>
         ///     Get the year
         /// </summary>
-        public int Year { get; }
+        public int Year { get; private set; }
 
 
         /// <summary>
@@ -220,5 +205,30 @@ namespace Luxonish
         ///     Get the name of the time zone.
         /// </summary>
         public string ZoneName { get; }
+
+        public static DateTime CreateLocal(int year = 1, int month = 1, int day = 1, int hour = 0, int minute = 0, int second = 0, int millisecond = 0, Settings? settings = null)
+        {
+            var now = System.DateTime.Now;
+            return new DateTime
+            {
+                Year = now.Year,
+                Month = now.Month,
+                Day = now.Day,
+                Hour = now.Hour,
+                Minute = now.Minute,
+                Second = now.Second,
+                Millisecond = now.Millisecond
+            };
+        }
+
+        public static DateTime CreateUtc(int year = 1, int month = 1, int day = 1, int hour = 0, int minute = 0, int second = 0, int millisecond = 0, Settings? settings = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public System.DateTime ToSystemDateTime()
+        {
+            return new System.DateTime(Year, Month, Day, Hour, Minute, Second, Millisecond);
+        }
     }
 }

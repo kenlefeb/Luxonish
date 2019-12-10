@@ -1,9 +1,11 @@
 ﻿using FluentAssertions;
 using Luxonish;
+using Tests.Utility;
 using Xunit;
 
 namespace Tests.DateTime
 {
+    [Trait(Trait.Category, Trait.UnitTest)]
     public class CreateUtc
     {
         [Fact]
