@@ -266,5 +266,34 @@ namespace Luxonish
                 ? CreateUtc(input.Year, input.Month, input.Day, input.Hour, input.Minute, input.Second, input.Millisecond)
                 : CreateLocal(input.Year, input.Month, input.Day, input.Hour, input.Minute, input.Second, input.Millisecond, zone: zone);
         }
+
+        private static DateTime _epoch = CreateUtc(1970, 1, 1, 0, 0, 0);
+
+        public static DateTime FromMilliseconds(in long milliseconds)
+        {
+            // TODO: Refactor to use Luxonish.DateTime instead of System.DateTime
+            var datetime = _epoch.ToSystemDateTime(DateTimeKind.Utc).AddMilliseconds(milliseconds);
+            return FromSystemDateTime(datetime);
+        }
+
+        public long ToEpochTime(EpochTimeKind kind = EpochTimeKind.Seconds)
+        {
+            // TODO: Refactor to use Luxonish.DateTime instead of System.DateTime
+            var datetime = ToSystemDateTime(DateTimeKind.Utc);
+            var epoch = _epoch.ToSystemDateTime(DateTimeKind.Utc);
+
+            return kind switch
+            {
+                EpochTimeKind.Seconds => (long)((datetime - epoch).TotalSeconds),
+                EpochTimeKind.Milliseconds => (long)((datetime - epoch).TotalMilliseconds),
+                _ => (long)((datetime - epoch).TotalSeconds)
+            };
+        }
+    }
+
+    public enum EpochTimeKind
+    {
+        Seconds = 0,
+        Milliseconds = 1
     }
 }
