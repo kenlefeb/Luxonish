@@ -25,7 +25,7 @@ namespace Tests.DateTime
             var actual = Luxonish.DateTime.CreateLocal(2017);
 
             // assert
-            actual.Year.Should().Be(2017, because: "DateTime.CreateLocal(2017) is the beginning of the year");
+            actual.Year.Should().Be(2017, because: "DateTime.CreateLocal(2017) should return the beginning of the year specified");
             actual.Month.Should().Be(1);
             actual.Day.Should().Be(1);
             actual.Hour.Should().Be(0);

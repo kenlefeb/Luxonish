@@ -208,20 +208,32 @@ namespace Luxonish
         /// </summary>
         public string ZoneName { get; }
 
-        public static DateTime CreateLocal(int year = 1, int month = 1, int day = 1, int hour = 0, int minute = 0, int second = 0, int millisecond = 0, Settings? settings = null)
+        public static DateTime CreateLocal(int? year = null, int? month = null, int? day = null, int? hour = null, int? minute = null, int? second = null, int? millisecond = null, Settings? settings = null)
         {
             var now = System.DateTime.Now;
-            return new DateTime
-            {
-                Year = now.Year,
-                Month = now.Month,
-                Day = now.Day,
-                Hour = now.Hour,
-                Minute = now.Minute,
-                Second = now.Second,
-                Millisecond = now.Millisecond,
-                _settings = settings ?? Settings.Default
-            };
+            return (year.HasValue || month.HasValue || day.HasValue || hour.HasValue || minute.HasValue || second.HasValue || millisecond.HasValue)
+                ? new DateTime
+                {
+                    Year = year ?? 1,
+                    Month = month ?? 1,
+                    Day = day ?? 1,
+                    Hour = hour ?? 0,
+                    Minute = minute ?? 0,
+                    Second = second ?? 0,
+                    Millisecond = millisecond ?? 0,
+                    _settings = settings ?? Settings.Default
+                }
+                : new DateTime
+                {
+                    Year = now.Year,
+                    Month = now.Month,
+                    Day = now.Day,
+                    Hour = now.Hour,
+                    Minute = now.Minute,
+                    Second = now.Second,
+                    Millisecond = now.Millisecond,
+                    _settings = settings ?? Settings.Default
+                };
         }
 
         public static DateTime CreateUtc(int year = 1, int month = 1, int day = 1, int hour = 0, int minute = 0, int second = 0, int millisecond = 0, Settings? settings = null)
