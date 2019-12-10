@@ -1,4 +1,6 @@
-﻿namespace Luxonish
+﻿using System;
+
+namespace Luxonish
 {
     /// <summary>
     ///     A DateTime is an immutable data structure representing a specific date and time and accompanying methods. It
@@ -6,10 +8,12 @@
     /// </summary>
     public class DateTime
     {
+        private Settings _settings = Settings.Default;
+
         /// <summary>
         ///     Get the day of the month (1-30ish).
         /// </summary>
-        public int Day { get; }
+        public int Day { get; private set; }
 
 
         /// <summary>
@@ -27,7 +31,7 @@
         /// <summary>
         ///     Get the hour of the day (0-23).
         /// </summary>
-        public int Hour { get; }
+        public int Hour { get; private set; }
 
 
         /// <summary>
@@ -69,25 +73,25 @@
         /// <summary>
         ///     Get the locale of a DateTime, such 'en-GB'.
         /// </summary>
-        public string Locale { get; }
+        public string Locale => _settings.DefaultLocale;
 
 
         /// <summary>
         ///     Get the millisecond of the second (0-999).
         /// </summary>
-        public int Millisecond { get; }
+        public int Millisecond { get; private set; }
 
 
         /// <summary>
         ///     Get the minute of the hour (0-59).
         /// </summary>
-        public int Minute { get; }
+        public int Minute { get; private set; }
 
 
         /// <summary>
         ///     Get the month (1-12).
         /// </summary>
-        public int Month { get; }
+        public int Month { get; private set; }
 
 
         /// <summary>
@@ -103,9 +107,9 @@
 
 
         /// <summary>
-        ///     Get the numbering system of a DateTime, such 'beng'.
+        ///     Get the numbering system of a DateTime, such 'beng'. 'auto' means the Internationalization API will automatically determine which numbering system to use.
         /// </summary>
-        public string NumberingSystem { get; }
+        public string NumberingSystem => _settings.DefaultNumberingSystem;
 
 
         /// <summary>
@@ -136,7 +140,7 @@
         /// <summary>
         ///     Get the output calendar of a DateTime, such 'islamic'.
         /// </summary>
-        public string OutputCalendar { get; }
+        public string OutputCalendar => _settings.DefaultOutputCalendar;
 
 
         /// <summary>
@@ -148,7 +152,7 @@
         /// <summary>
         ///     Get the second of the minute (0-59).
         /// </summary>
-        public int Second { get; }
+        public int Second { get; private set; }
 
 
         /// <summary>
@@ -190,7 +194,7 @@
         /// <summary>
         ///     Get the year
         /// </summary>
-        public int Year { get; }
+        public int Year { get; private set; }
 
 
         /// <summary>
@@ -203,5 +207,47 @@
         ///     Get the name of the time zone.
         /// </summary>
         public string ZoneName { get; }
+
+        public static DateTime CreateLocal(int? year = null, int? month = null, int? day = null, int? hour = null, int? minute = null, int? second = null, int? millisecond = null, Settings? settings = null)
+        {
+            return Create(year, month, day, hour, minute, second, millisecond, settings, System.DateTime.Now);
+        }
+
+        private static DateTime Create(int? year, int? month, int? day, int? hour, int? minute, int? second, int? millisecond, Settings settings, System.DateTime now)
+        {
+            return (year.HasValue || month.HasValue || day.HasValue || hour.HasValue || minute.HasValue || second.HasValue || millisecond.HasValue)
+                ? new DateTime
+                {
+                    Year = year ?? 1,
+                    Month = month ?? 1,
+                    Day = day ?? 1,
+                    Hour = hour ?? 0,
+                    Minute = minute ?? 0,
+                    Second = second ?? 0,
+                    Millisecond = millisecond ?? 0,
+                    _settings = settings ?? Settings.Default
+                }
+                : new DateTime
+                {
+                    Year = now.Year,
+                    Month = now.Month,
+                    Day = now.Day,
+                    Hour = now.Hour,
+                    Minute = now.Minute,
+                    Second = now.Second,
+                    Millisecond = now.Millisecond,
+                    _settings = settings ?? Settings.Default
+                };
+        }
+
+        public static DateTime CreateUtc(int? year = null, int? month = null, int? day = null, int? hour = null, int? minute = null, int? second = null, int? millisecond = null, Settings? settings = null)
+        {
+            return Create(year, month, day, hour, minute, second, millisecond, settings, System.DateTime.UtcNow);
+        }
+
+        public System.DateTime ToSystemDateTime(DateTimeKind kind)
+        {
+            return new System.DateTime(Year, Month, Day, Hour, Minute, Second, Millisecond, kind);
+        }
     }
 }
