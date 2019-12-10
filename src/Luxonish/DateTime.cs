@@ -200,20 +200,25 @@ namespace Luxonish
         /// <summary>
         ///     Get the time zone associated with this DateTime.
         /// </summary>
-        public Zone Zone { get; }
+        public Zone Zone { get; private set; }
 
 
         /// <summary>
         ///     Get the name of the time zone.
         /// </summary>
-        public string ZoneName { get; }
+        public string ZoneName => Zone?.Name ?? "n/a";
 
-        public static DateTime CreateLocal(int? year = null, int? month = null, int? day = null, int? hour = null, int? minute = null, int? second = null, int? millisecond = null, Settings? settings = null)
+        public static DateTime CreateLocal(int? year = null, int? month = null, int? day = null, int? hour = null, int? minute = null, int? second = null, int? millisecond = null, Zone? zone = null, Settings? settings = null)
         {
-            return Create(year, month, day, hour, minute, second, millisecond, settings, System.DateTime.Now);
+            if (zone == null)
+                zone = Zone.Default;
+
+            // TODO: Convert "Now" from the specified time zone to the Local time zone
+
+            return Create(year, month, day, hour, minute, second, millisecond, zone, settings, System.DateTime.Now);
         }
 
-        private static DateTime Create(int? year, int? month, int? day, int? hour, int? minute, int? second, int? millisecond, Settings settings, System.DateTime now)
+        private static DateTime Create(int? year, int? month, int? day, int? hour, int? minute, int? second, int? millisecond, Zone zone, Settings settings, System.DateTime now)
         {
             return (year.HasValue || month.HasValue || day.HasValue || hour.HasValue || minute.HasValue || second.HasValue || millisecond.HasValue)
                 ? new DateTime
@@ -225,6 +230,7 @@ namespace Luxonish
                     Minute = minute ?? 0,
                     Second = second ?? 0,
                     Millisecond = millisecond ?? 0,
+                    Zone = zone,
                     _settings = settings ?? Settings.Default
                 }
                 : new DateTime
@@ -236,18 +242,29 @@ namespace Luxonish
                     Minute = now.Minute,
                     Second = now.Second,
                     Millisecond = now.Millisecond,
+                    Zone = zone,
                     _settings = settings ?? Settings.Default
                 };
         }
 
         public static DateTime CreateUtc(int? year = null, int? month = null, int? day = null, int? hour = null, int? minute = null, int? second = null, int? millisecond = null, Settings? settings = null)
         {
-            return Create(year, month, day, hour, minute, second, millisecond, settings, System.DateTime.UtcNow);
+            return Create(year, month, day, hour, minute, second, millisecond, Zone.Utc, settings, System.DateTime.UtcNow);
         }
 
         public System.DateTime ToSystemDateTime(DateTimeKind kind)
         {
             return new System.DateTime(Year, Month, Day, Hour, Minute, Second, Millisecond, kind);
+        }
+
+        public static DateTime FromSystemDateTime(in System.DateTime input, Zone? zone = null)
+        {
+            if (input.Kind == DateTimeKind.Utc && (zone != null && zone != Zone.Utc))
+                throw new ArgumentOutOfRangeException(nameof(zone), $"You may not specify the time zone \"{zone?.Name ?? "null"}\" along with a DateTime.Kind == Utc");
+
+            return input.Kind == DateTimeKind.Utc
+                ? CreateUtc(input.Year, input.Month, input.Day, input.Hour, input.Minute, input.Second, input.Millisecond)
+                : CreateLocal(input.Year, input.Month, input.Day, input.Hour, input.Minute, input.Second, input.Millisecond, zone: zone);
         }
     }
 }

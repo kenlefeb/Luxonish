@@ -5,9 +5,9 @@
     /// </summary>
     public class InvalidZone : Zone
     {
-        public override bool IsValid { get; }
-        public override string Name { get; }
-        public override string Type { get; }
-        public override bool Universal { get; }
+        public override bool IsValid { get; protected set; }
+        public override string Name { get; protected set; }
+        public override string Type { get; protected set; }
+        public override bool Universal { get; protected set; }
     }
 }

@@ -5,9 +5,13 @@
     /// </summary>
     public class IanaZone : Zone
     {
-        public override bool IsValid { get; }
-        public override string Name { get; }
-        public override string Type { get; }
-        public override bool Universal { get; }
+        public IanaZone(string name)
+        {
+            Name = name;
+        }
+        public override bool IsValid { get; protected set; }
+        public override string Name { get; protected set; }
+        public override string Type { get; protected set; }
+        public override bool Universal { get; protected set; }
     }
 }
