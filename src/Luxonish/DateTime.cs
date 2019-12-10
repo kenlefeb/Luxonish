@@ -140,7 +140,7 @@ namespace Luxonish
         /// <summary>
         ///     Get the output calendar of a DateTime, such 'islamic'.
         /// </summary>
-        public string OutputCalendar { get; }
+        public string OutputCalendar => _settings.DefaultOutputCalendar;
 
 
         /// <summary>

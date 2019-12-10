@@ -140,7 +140,7 @@ namespace Tests.DateTime
             var actual = Luxonish.DateTime.CreateLocal(settings: settings);
 
             // assert
-            actual.Locale.Should().Be("fr", because: "DateTime.local accepts the default locale");
+            actual.Locale.Should().Be("fr", because: "DateTime.CreateLocal() should use the default locale setting");
         }
 
         [Fact]
@@ -154,7 +154,7 @@ namespace Tests.DateTime
             var actual = Luxonish.DateTime.CreateLocal(settings: settings);
 
             // assert
-            actual.NumberingSystem.Should().Be("beng", because: "DateTime.local accepts the default numbering system");
+            actual.NumberingSystem.Should().Be("beng", because: "DateTime.CreateLocal() should use the default numbering system");
         }
 
         [Fact]
@@ -168,7 +168,7 @@ namespace Tests.DateTime
             var actual = Luxonish.DateTime.CreateLocal(settings: settings);
 
             // assert
-            actual.OutputCalendar.Should().Be("hebrew", because: "DateTime.local accepts the default output calendar");
+            actual.OutputCalendar.Should().Be("hebrew", because: "DateTime.CreateLocal() should use the default output calendar");
         }
     }
 }

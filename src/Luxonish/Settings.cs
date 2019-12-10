@@ -25,9 +25,9 @@ namespace Luxonish
             set => _settings[nameof(DefaultNumberingSystem)] = value;
         }
 
-        public string? DefaultOutputCalendar
+        public string DefaultOutputCalendar
         {
-            get => _settings[nameof(DefaultOutputCalendar)];
+            get => _settings[nameof(DefaultOutputCalendar)] ?? Default.DefaultOutputCalendar;
             set => _settings[nameof(DefaultOutputCalendar)] = value;
         }
 
