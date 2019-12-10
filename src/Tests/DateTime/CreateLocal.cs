@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Luxonish;
+using System;
 using Tests.Utility;
 using Xunit;
 
@@ -15,7 +16,7 @@ namespace Tests.DateTime
             var actual = Luxonish.DateTime.CreateLocal();
 
             // assert
-            actual.ToSystemDateTime().Should().BeCloseTo(System.DateTime.Now, because: "DateTime.CreateLocal() should return today's date");
+            actual.ToSystemDateTime(DateTimeKind.Local).Should().BeCloseTo(System.DateTime.Now, because: "DateTime.CreateLocal() should return today's date");
         }
 
         [Fact]

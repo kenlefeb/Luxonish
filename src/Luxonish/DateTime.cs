@@ -210,7 +210,11 @@ namespace Luxonish
 
         public static DateTime CreateLocal(int? year = null, int? month = null, int? day = null, int? hour = null, int? minute = null, int? second = null, int? millisecond = null, Settings? settings = null)
         {
-            var now = System.DateTime.Now;
+            return Create(year, month, day, hour, minute, second, millisecond, settings, System.DateTime.Now);
+        }
+
+        private static DateTime Create(int? year, int? month, int? day, int? hour, int? minute, int? second, int? millisecond, Settings settings, System.DateTime now)
+        {
             return (year.HasValue || month.HasValue || day.HasValue || hour.HasValue || minute.HasValue || second.HasValue || millisecond.HasValue)
                 ? new DateTime
                 {
@@ -236,14 +240,14 @@ namespace Luxonish
                 };
         }
 
-        public static DateTime CreateUtc(int year = 1, int month = 1, int day = 1, int hour = 0, int minute = 0, int second = 0, int millisecond = 0, Settings? settings = null)
+        public static DateTime CreateUtc(int? year = null, int? month = null, int? day = null, int? hour = null, int? minute = null, int? second = null, int? millisecond = null, Settings? settings = null)
         {
-            throw new NotImplementedException();
+            return Create(year, month, day, hour, minute, second, millisecond, settings, System.DateTime.UtcNow);
         }
 
-        public System.DateTime ToSystemDateTime()
+        public System.DateTime ToSystemDateTime(DateTimeKind kind)
         {
-            return new System.DateTime(Year, Month, Day, Hour, Minute, Second, Millisecond);
+            return new System.DateTime(Year, Month, Day, Hour, Minute, Second, Millisecond, kind);
         }
     }
 }

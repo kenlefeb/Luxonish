@@ -15,7 +15,7 @@ namespace Tests.DateTime
             var actual = Luxonish.DateTime.CreateUtc();
 
             // assert
-            actual.ToSystemDateTime().Should().BeCloseTo(System.DateTime.UtcNow, because: "DateTime.utc() is in utc");
+            actual.ToSystemDateTime(System.DateTimeKind.Utc).Should().BeCloseTo(System.DateTime.UtcNow, because: "DateTime.utc() is in utc");
         }
 
         [Fact]
