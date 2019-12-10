@@ -13,9 +13,9 @@ namespace Luxonish
             DefaultOutputCalendar = "gregorian"
         };
 
-        public string? DefaultLocale
+        public string DefaultLocale
         {
-            get => _settings[nameof(DefaultLocale)];
+            get => _settings[nameof(DefaultLocale)] ?? Default.DefaultLocale;
             set => _settings[nameof(DefaultLocale)] = value;
         }
 

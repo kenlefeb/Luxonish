@@ -8,6 +8,8 @@ namespace Luxonish
     /// </summary>
     public class DateTime
     {
+        private Settings _settings = Settings.Default;
+
         /// <summary>
         ///     Get the day of the month (1-30ish).
         /// </summary>
@@ -71,7 +73,7 @@ namespace Luxonish
         /// <summary>
         ///     Get the locale of a DateTime, such 'en-GB'.
         /// </summary>
-        public string Locale { get; }
+        public string Locale => _settings.DefaultLocale;
 
 
         /// <summary>
@@ -217,7 +219,8 @@ namespace Luxonish
                 Hour = now.Hour,
                 Minute = now.Minute,
                 Second = now.Second,
-                Millisecond = now.Millisecond
+                Millisecond = now.Millisecond,
+                _settings = settings ?? Settings.Default
             };
         }
 
