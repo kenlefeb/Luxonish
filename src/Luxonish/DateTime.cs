@@ -107,9 +107,9 @@ namespace Luxonish
 
 
         /// <summary>
-        ///     Get the numbering system of a DateTime, such 'beng'.
+        ///     Get the numbering system of a DateTime, such 'beng'. 'auto' means the Internationalization API will automatically determine which numbering system to use.
         /// </summary>
-        public string NumberingSystem { get; }
+        public string NumberingSystem => _settings.DefaultNumberingSystem;
 
 
         /// <summary>

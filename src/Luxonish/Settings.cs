@@ -9,7 +9,7 @@ namespace Luxonish
         public static Settings Default => new Settings
         {
             DefaultLocale = "en",
-            DefaultNumberingSystem = null,
+            DefaultNumberingSystem = "auto",
             DefaultOutputCalendar = "gregorian"
         };
 
@@ -19,9 +19,9 @@ namespace Luxonish
             set => _settings[nameof(DefaultLocale)] = value;
         }
 
-        public string? DefaultNumberingSystem
+        public string DefaultNumberingSystem
         {
-            get => _settings[nameof(DefaultNumberingSystem)];
+            get => _settings[nameof(DefaultNumberingSystem)] ?? Default.DefaultNumberingSystem;
             set => _settings[nameof(DefaultNumberingSystem)] = value;
         }
 
