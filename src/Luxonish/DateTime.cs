@@ -1,4 +1,6 @@
-﻿namespace Luxonish
+﻿using System;
+
+namespace Luxonish
 {
     /// <summary>
     ///     A DateTime is an immutable data structure representing a specific date and time and accompanying methods. It
@@ -10,6 +12,21 @@
         ///     Get the day of the month (1-30ish).
         /// </summary>
         public int Day { get; }
+
+        public static DateTime CreateLocal(int year = 1, int month = 1, int day = 1, int hour = 0, int minute = 0, int second = 0, int millisecond = 0, Settings? settings = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static DateTime CreateUtc(int year = 1, int month = 1, int day = 1, int hour = 0, int minute = 0, int second = 0, int millisecond = 0, Settings? settings = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public System.DateTime ToSystemDateTime()
+        {
+            throw new NotImplementedException();
+        }
 
 
         /// <summary>
