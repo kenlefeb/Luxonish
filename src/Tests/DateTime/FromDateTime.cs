@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Luxonish;
 using Luxonish.Zones;
 using System;
 using Tests.Utility;
@@ -19,7 +20,7 @@ namespace Tests.DateTime
             var actual = Luxonish.DateTime.FromSystemDateTime(input);
 
             // assert
-            actual.ToSystemDateTime(DateTimeKind.Local).Should().Be(input, because: "DateTime.FromSystemDateTime(date) should clone the date");
+            actual.ToMilliseconds().Should().Be(input.ToMilliseconds(), because: "DateTime.FromSystemDateTime(date) should clone the date");
         }
 
         [Fact]

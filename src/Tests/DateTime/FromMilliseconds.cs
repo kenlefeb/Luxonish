@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
 using Luxonish;
+using Luxonish.Zones;
+using System;
 using Tests.Utility;
 using Xunit;
 
@@ -18,33 +20,62 @@ namespace Tests.DateTime
             var actual = Luxonish.DateTime.FromMilliseconds(milliseconds);
 
             // assert
-            actual.ToEpochTime(EpochTimeKind.Milliseconds).Should().Be(milliseconds);
+            actual.ToMilliseconds().Should().Be(milliseconds);
 
         }
 
-        /*
+        [Fact]
+        public void WithDefaultLocale_UsesLocale()
+        {
+            // arrange
+            var settings = new Settings { DefaultLocale = "fr" };
 
-            test("DateTime.fromMillis(ms) accepts a zone option", () => {
-              const value = 391147200000,
-                dateTime = DateTime.fromMillis(value, { zone: "America/Santiago" });
+            // act
+            var actual = Luxonish.DateTime.FromMilliseconds(391147200000, settings: settings);
 
-              expect(dateTime.valueOf()).toBe(value);
-              expect(dateTime.zoneName).toBe("America/Santiago");
-            });
+            // assert
+            actual.Locale.Should().Be("fr", because: "DateTime.FromMilliseconds(milliseconds) should use the default locale setting");
+        }
 
-            test("DateTime.fromMillis accepts the default locale", () => {
-              withDefaultLocale("fr", () => expect(DateTime.fromMillis(391147200000).locale).toBe("fr"));
-            });
+        [Fact]
+        public void WithDefaultNumberingSystem_UsesNumberingSystem()
+        {
+            // arrange
+            var settings = Settings.Default;
+            settings["DefaultNumberingSystem"] = "beng";
 
-            test("DateTime.fromMillis(ms) throws InvalidArgumentError for non-numeric input", () => {
-              expect(() => DateTime.fromMillis("slurp")).toThrow();
-            });
+            // act
+            var actual = Luxonish.DateTime.FromMilliseconds(391147200000, settings: settings);
 
-            test("DateTime.fromMillis(ms) does not accept out-of-bounds numbers", () => {
-              expect(DateTime.fromMillis(-8.64e15 - 1).isValid).toBe(false);
-              expect(DateTime.fromMillis(8.64e15 + 1).isValid).toBe(false);
-            });
+            // assert
+            actual.NumberingSystem.Should().Be("beng", because: "DateTime.CreateLocal() should use the default numbering system");
+        }
 
-         */
+        [Fact]
+        public void WithDefaultOutputCalendar_UsesOutputCalendar()
+        {
+            // arrange
+            var settings = Settings.Default;
+            settings["DefaultOutputCalendar"] = "hebrew";
+
+            // act
+            var actual = Luxonish.DateTime.FromMilliseconds(391147200000, settings: settings);
+
+            // assert
+            actual.OutputCalendar.Should().Be("hebrew", because: "DateTime.CreateLocal() should use the default output calendar");
+        }
+
+        [Fact]
+        public void WithZone_UsesZone()
+        {
+            // arrange test
+            var input = new System.DateTime(1982, 4, 25, 0, 0, 0, DateTimeKind.Local);
+
+            // act
+            var actual = Luxonish.DateTime.FromMilliseconds(391147200000, new IanaZone("America/Santiago"));
+
+            // assert
+            actual.ZoneName.Should().Be("America/Santiago", because: "DateTime.FromSystemDateTime(date) should accept a zone option");
+        }
     }
 }
