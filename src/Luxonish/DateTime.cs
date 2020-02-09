@@ -9,11 +9,12 @@ namespace Luxonish
     public class DateTime
     {
         private Settings _settings = Settings.Default;
+        private long _milliseconds;
 
         /// <summary>
         ///     Get the day of the month (1-30ish).
         /// </summary>
-        public int Day { get; private set; }
+        public int Day => _milliseconds.ToSystemDateTime().Day;
 
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace Luxonish
         /// <summary>
         ///     Get the hour of the day (0-23).
         /// </summary>
-        public int Hour { get; private set; }
+        public int Hour => _milliseconds.ToSystemDateTime().Hour;
 
 
         /// <summary>
@@ -79,19 +80,19 @@ namespace Luxonish
         /// <summary>
         ///     Get the millisecond of the second (0-999).
         /// </summary>
-        public int Millisecond { get; private set; }
+        public int Millisecond => _milliseconds.ToSystemDateTime().Millisecond;
 
 
         /// <summary>
         ///     Get the minute of the hour (0-59).
         /// </summary>
-        public int Minute { get; private set; }
+        public int Minute => _milliseconds.ToSystemDateTime().Minute;
 
 
         /// <summary>
         ///     Get the month (1-12).
         /// </summary>
-        public int Month { get; private set; }
+        public int Month => _milliseconds.ToSystemDateTime().Month;
 
 
         /// <summary>
@@ -152,7 +153,7 @@ namespace Luxonish
         /// <summary>
         ///     Get the second of the minute (0-59).
         /// </summary>
-        public int Second { get; private set; }
+        public int Second => _milliseconds.ToSystemDateTime().Second;
 
 
         /// <summary>
@@ -194,60 +195,110 @@ namespace Luxonish
         /// <summary>
         ///     Get the year
         /// </summary>
-        public int Year { get; private set; }
+        public int Year => _milliseconds.ToSystemDateTime().Year;
 
 
         /// <summary>
         ///     Get the time zone associated with this DateTime.
         /// </summary>
-        public Zone Zone { get; }
+        public Zone Zone { get; private set; }
+
+        public DateTime ToZone(Zone zone, bool keepLocalTime = false, bool keepCalendarTime = false)
+        {
+            if (zone == Zone)
+                return this;
+
+            if (!zone.IsValid)
+                throw new ArgumentOutOfRangeException(nameof(zone), $"Invalid time zone (\"{zone.Name}\") specified");
+
+            return this;
+
+            /*
+             *       let newTS = this.ts;
+                  if (keepLocalTime || keepCalendarTime) {
+                    const offsetGuess = this.o - zone.offset(this.ts);
+                    const asObj = this.toObject();
+                    [newTS] = objToTS(asObj, offsetGuess, zone);
+                  }
+                  return clone(this, { ts: newTS, zone });
+
+             */
+        }
 
 
         /// <summary>
         ///     Get the name of the time zone.
         /// </summary>
-        public string ZoneName { get; }
+        public string ZoneName => Zone?.Name ?? "n/a";
 
-        public static DateTime CreateLocal(int? year = null, int? month = null, int? day = null, int? hour = null, int? minute = null, int? second = null, int? millisecond = null, Settings? settings = null)
+        public static DateTime CreateLocal(int? year = null, int? month = null, int? day = null, int? hour = null, int? minute = null, int? second = null, int? millisecond = null, Zone? zone = null, Settings? settings = null)
         {
-            return Create(year, month, day, hour, minute, second, millisecond, settings, System.DateTime.Now);
+            if (zone == null)
+                zone = Zone.Default;
+
+            // TODO: Convert "Now" from the specified time zone to the Local time zone
+            return Create(year, month, day, hour, minute, second, millisecond, zone, settings ?? Settings.Default, System.DateTime.Now);
         }
 
-        private static DateTime Create(int? year, int? month, int? day, int? hour, int? minute, int? second, int? millisecond, Settings settings, System.DateTime now)
+        private static DateTime Create(int? year, int? month, int? day, int? hour, int? minute, int? second, int? millisecond, Zone zone, Settings settings, System.DateTime now)
         {
-            return (year.HasValue || month.HasValue || day.HasValue || hour.HasValue || minute.HasValue || second.HasValue || millisecond.HasValue)
-                ? new DateTime
-                {
-                    Year = year ?? 1,
-                    Month = month ?? 1,
-                    Day = day ?? 1,
-                    Hour = hour ?? 0,
-                    Minute = minute ?? 0,
-                    Second = second ?? 0,
-                    Millisecond = millisecond ?? 0,
-                    _settings = settings ?? Settings.Default
-                }
-                : new DateTime
-                {
-                    Year = now.Year,
-                    Month = now.Month,
-                    Day = now.Day,
-                    Hour = now.Hour,
-                    Minute = now.Minute,
-                    Second = now.Second,
-                    Millisecond = now.Millisecond,
-                    _settings = settings ?? Settings.Default
-                };
+            var datetime = (year.HasValue || month.HasValue || day.HasValue || hour.HasValue || minute.HasValue || second.HasValue || millisecond.HasValue)
+                ? new System.DateTime(
+                    year ?? 1,
+                    month ?? 1,
+                    day ?? 1,
+                    hour ?? 0,
+                    minute ?? 0,
+                    second ?? 0,
+                    millisecond ?? 0
+                )
+                : new System.DateTime
+                (
+                    now.Year,
+                    now.Month,
+                    now.Day,
+                    now.Hour,
+                    now.Minute,
+                    now.Second,
+                    now.Millisecond
+                );
+            return new DateTime
+            {
+                _milliseconds = datetime.ToMilliseconds(),
+                Zone = zone,
+                _settings = settings
+            };
         }
 
         public static DateTime CreateUtc(int? year = null, int? month = null, int? day = null, int? hour = null, int? minute = null, int? second = null, int? millisecond = null, Settings? settings = null)
         {
-            return Create(year, month, day, hour, minute, second, millisecond, settings, System.DateTime.UtcNow);
+            return Create(year, month, day, hour, minute, second, millisecond, Zone.Utc, settings, System.DateTime.UtcNow);
         }
 
-        public System.DateTime ToSystemDateTime(DateTimeKind kind)
+        public System.DateTime ToSystemDateTime()
         {
-            return new System.DateTime(Year, Month, Day, Hour, Minute, Second, Millisecond, kind);
+            return _milliseconds.ToSystemDateTime();
+        }
+
+        public static DateTime FromSystemDateTime(in System.DateTime input, Zone? zone = null, Settings? settings = null)
+        {
+            if (input.Kind == DateTimeKind.Utc && (zone != null && zone != Zone.Utc))
+                throw new ArgumentOutOfRangeException(nameof(zone), $"You may not specify the time zone \"{zone?.Name ?? "null"}\" along with a DateTime.Kind == Utc");
+
+            return input.Kind == DateTimeKind.Utc
+                ? CreateUtc(input.Year, input.Month, input.Day, input.Hour, input.Minute, input.Second, input.Millisecond, settings)
+                : CreateLocal(input.Year, input.Month, input.Day, input.Hour, input.Minute, input.Second, input.Millisecond, zone: zone, settings);
+        }
+
+        public static DateTime FromMilliseconds(in long milliseconds, Zone? zone = null, Settings? settings = null)
+        {
+            var datetime = milliseconds.ToSystemDateTime();
+            return FromSystemDateTime(datetime, zone, settings);
+        }
+
+        public long ToMilliseconds()
+        {
+            return _milliseconds;
         }
     }
 }
